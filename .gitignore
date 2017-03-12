@@ -1,2 +1,5 @@
 db.sqlite3
 chatbot_tutorial.sublime-workspace
+*.pyc
+.DS_Store
+bot_static
