@@ -1,0 +1,150 @@
+
+html,
+body {
+    height: 100%;
+}
+#wrap {
+    min-height: 80%;
+    height: auto;
+}
+#messages-container{
+    width:100%;
+    display:table;
+}
+.msg-row{
+    display:table-row;
+    height:0
+}
+.bot-icon-div{
+    float: left;
+    padding-right: 6px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 38px;
+    height: 32px;
+    padding-top: 15px;
+
+}
+.bot-icon{  
+    height:40px;
+}
+
+.bottom-padding{
+    padding-bottom:10px;
+}
+
+.msg-animate{
+    animation-name: fadeInAndUp;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-timing-function:ease-in-out;
+}
+
+@keyframes fadeInAndUp {
+
+    0% {
+        bottom:-5px;
+        opacity:0.1;
+    }
+    50%{
+        bottom:-2.5px;
+        opacity:0.5;
+    }
+    100%{
+        bottom:0px;
+        opacity:1;
+    }
+
+}
+.message-text{
+    font-size: 14px;
+    font-family:'Myriad Pro';
+    overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  word-break: initial;
+
+}
+#send-box{
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    background-color:#FFFFFF;
+    height:auto;
+    width:100%;
+    margin-left:0px;
+    margin-right:0px;
+}
+
+#body-container{
+    padding:10px;
+    position:absolute;
+    bottom:50px;
+    right:0;
+    left:0;
+    top:40px;
+    overflow-y:auto;
+}
+#sub-body-container{
+    max-width: 50em;
+    margin:0 auto;
+}
+#bottom-box{
+    padding:5px;
+    height:auto;
+}
+[contentEditable=true]:empty:not(:focus):before{
+    content:attr(data-ph);
+    display:block;
+    opacity:0.4;
+}
+#messageToSend {
+    font-size: 14px;
+    color:#000000;
+    border: 0px;
+    min-height:22px;
+    max-height: 62px;
+    overflow-y:hidden;
+    outline:none;
+    padding-top:0px;
+    padding-bottom:0px;
+    padding-right:40px;
+    margin:0px;
+    width:100%;
+}
+
+.send-button-div{
+    text-align:right;
+    line-height : normal;
+    position:absolute;
+    right:15px;
+    margin-top:-6px;
+}
+
+#messageSendButton {
+
+    background-color:#FFFFFF;
+    color:none;
+    border: 0px;
+    padding :0px;
+    font-family:Glyphs;
+    font-size:26px;
+    line-height:normal;
+    outline:none;
+}
+.user-msg-bubble{
+font-size: 10px;
+    margin-top: -20px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    color: #aaa;
+}
+.bot-msg-body{
+        background: #eee;
+    border-radius: 5px;
+}
+

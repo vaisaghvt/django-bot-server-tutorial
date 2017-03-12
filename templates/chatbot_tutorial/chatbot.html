@@ -1,0 +1,181 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+
+        <link rel="shortcut icon" href="{% static 'chatbot_tutorial/favicon.ico' %}" type="image/x-icon">
+        <link rel="icon" href="{% static 'chatbot_tutorial/favicon.ico' %}" type="image/x-icon">
+
+
+        <link rel="stylesheet" href="{% static 'chatbot_tutorial/bootstrap/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'chatbot_tutorial/css/chat.css' %}">
+       
+        <link href="{% static 'chatbot_tutorial/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <base target="_blank"/>
+        <title>Websockets Bot</title>
+
+    </head>
+    <body>
+        <!-- Wrap all page content here -->
+
+        <div id="wrap" class="BotMainDiv" ng-controller="ChatCtrl">
+            <!-- Begin page content -->
+            <div class="container-fluid" id="body-container" style="border-bottom: #eee 1px solid;">
+               
+                <div  id="sub-body-container">
+                    
+                    <div  id="messages-container">
+                        
+                    </div>
+                    <div class="error-notification alert alert-info" style="display:none;"></div>
+                    
+                    
+                </div>
+            </div>
+        
+            <div class="navbar navbar-default navbar-fixed-bottom non-error">
+                <div class="container-fluid botAccentColor" id="bottom-box">
+                    
+                    <div class="row" id="send-box">
+                        
+                        <div id="messageToSend" contenteditable="true" class="pull-left" data-ph="Type your message..."></div>
+                        
+
+                        <div class="pull-right send-button-div">
+                            <button  id="messageSendButton" type="button" onclick="sendTextMessage()">
+                                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            </button>  
+                        </div>
+
+                    </div>
+                    
+                </div>
+                    
+            </div>
+
+        </div>
+        
+        <script type="text/javascript">
+                // using jQuery
+                // $(document).ready(function () {            
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                var csrftoken = getCookie('csrftoken');
+                    // });
+
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+                function sameOrigin(url) {
+                    // test that a given url is a same-origin URL
+                    // url could be relative or scheme relative or absolute
+                    var host = document.location.host; // host + port
+                    var protocol = document.location.protocol;
+                    var sr_origin = '//' + host;
+                    var origin = protocol + sr_origin;
+                    // Allow absolute or scheme relative URLs to same origin
+                    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                        // or any other URL that isn't scheme relative or absolute i.e relative.
+                        !(/^(\/\/|http:|https:).*/.test(url));
+                }
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                            // Send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
+
+        </script>
+
+
+        <script src="{% static 'chatbot_tutorial/js/reconnecting-websocket.min.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'chatbot_tutorial/js/internal-chatbox.js' %}" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/javascript">
+            
+            var supportsWebSockets = ('WebSocket' in window || 'MozWebSocket' in window) && WebSocket;
+            if(!supportsWebSockets){
+                $(".very-old-browser-notification").show();
+                $(".non-error").hide();
+            }else{
+                $(".very-old-browser-notification").hide();
+                $(".non-error").show();
+            }
+            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+            var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat/stream/test-chat");
+
+            var isInIframe = (window.location != window.parent.location) ? true : false;
+
+            $(document).ready(function() {
+                $("#body-container").scrollTop( $('#body-container')[0].scrollHeight );
+            });
+
+            var error_message_displayed = false;
+            $("#messageToSend").keypress(function (e) {
+                var key = e.which;
+                
+                if (key == 13)  // trigger message send when enter
+                {
+                    $('#messageSendButton').trigger('click');
+                    return false;
+                }
+            });
+
+            chatsock.onopen = function(message) {
+
+                // console.log("here");
+                $('.error-notification').hide();
+                $('.non-error').show();
+                $('#messages-container').html('<div  class="empty-div"></div>');
+                message = {}
+                message.command= 'start'
+                
+                chatsock.send(JSON.stringify(message));
+            }
+            chatsock.onmessage = function(message){
+                processAndDisplayChatMessage(message);
+               
+            };
+
+            chatsock.onclose = function(message){
+                console.log("connection lost ... ");
+            }
+            chatsock.onerror = function(message){
+                console.log("Error reconnecting ... ");
+                
+                $('.error-notification').html("Unable to connect to the impress.ai server. Please try again in a few minutes (by refreshing the page). If the problem persists, please contact impress.ai (contact@impress.ai)).")
+                $('.error-notification').show();
+                $('.non-error').hide();
+                $("#body-container").scrollTop( $('#body-container')[0].scrollHeight );   
+            }
+
+        </script>
+
+</body>
+</html>
