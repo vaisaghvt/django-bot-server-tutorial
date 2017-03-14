@@ -133,8 +133,6 @@ SITE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(SITE_ROOT, "bot_data_folders")
 STATIC_ROOT = os.path.join(SITE_ROOT, "bot_static")
 
-
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgiref.inmemory.ChannelLayer",
