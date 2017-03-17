@@ -33,8 +33,8 @@ def send_messages(message, token):
                     """Yo' Mama is so stupid, she thinks DNA is the National Dyslexics Association."""],
          'fat':    ["""Yo' Mama is so fat, when she goes to a restaurant, instead of a menu, she gets an estimate.""",
                     """ Yo' Mama is so fat, when the cops see her on a street corner, they yell, "Hey you guys, break it up!" """],
-         'dumb':   ["""Yo' Mama is so dumb, when God was giving out brains, she thought they were milkshakes and asked for extra thick.""",
-                    """Yo' Mama is so dumb, she locked her keys inside her motorcycle."""] 
+         'dumb':   ["""THis is fun""",
+                    """THis isn't fun"""] 
     }
 
     post_message_url = "https://api.telegram.org/bot{0}/sendMessage".format(token)
@@ -70,7 +70,7 @@ class TelegramBotView(generic.View):
 
     # Post function to handle messages in whatever format they come
     def post(self, request, *args, **kwargs):
-        TELEGRAM_TOKEN = 'WRITE_TOKEN_HERE'
+        TELEGRAM_TOKEN = '324015315:AAGhMhW0Uny_3rQbHw2pJdGVMjyssLXWcgI'
         message = get_message_from_request(request)
         send_messages(message, TELEGRAM_TOKEN)
 
