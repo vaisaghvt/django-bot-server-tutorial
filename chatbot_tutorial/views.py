@@ -7,21 +7,14 @@ from django.utils.decorators import method_decorator
 from django.http.response import HttpResponse
 
 
-def get_chat_id(received_message):
-        chat_id = received_message['from']['id']
-        return chat_id
-
-
 def get_message_from_request(request):
 
     received_message = {}
     decoded_request = json.loads(request.body.decode('utf-8'))
 
     if 'message' in decoded_request:
-        received_message = decoded_request['message']
-
-        received_message['chat_id'] = get_chat_id(
-            received_message)
+        received_message = decoded_request['message'] 
+        received_message['chat_id'] = received_message['from']['id'] # simply for easier reference
 
     return received_message
 
@@ -39,7 +32,7 @@ def send_messages(message, token):
 
     post_message_url = "https://api.telegram.org/bot{0}/sendMessage".format(token)
 
-    result_message = {}
+    result_message = {}         # the response needs to contain just a chat_id and text field for  telegram to accept it
     result_message['chat_id'] = message['chat_id']
     if 'fat' in message['text']:
         result_message['text'] = random.choice(jokes['fat'])
@@ -54,15 +47,13 @@ def send_messages(message, token):
         result_message['text'] = "I don't know any responses for that. If you're interested in yo mama jokes tell me fat, stupid or dumb."
 
     response_msg = json.dumps(result_message)
-
     status = requests.post(post_message_url, headers={
         "Content-Type": "application/json"}, data=response_msg)
 
 
 class TelegramBotView(generic.View):
 
-    # Dispatches to get or post
-    # TODO: is the csrf_exempt necessary?
+    # csrf_exempt is necessary because the request comes from the Telegram server.
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return generic.View.dispatch(self, request, *args, **kwargs)
