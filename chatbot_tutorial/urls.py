@@ -18,7 +18,6 @@ from django.contrib import admin
 from .views import TelegramBotView, chat
 
 urlpatterns = [
-	url(r'^c817304a3d163ebd58b44dd446eba29572300724098cdbca1a/?$', TelegramBotView.as_view()),
 	url(r'^chat/$', chat, name='chat'),
     url(r'^admin/', admin.site.urls)
 ]
