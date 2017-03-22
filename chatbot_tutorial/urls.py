@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from .views import TelegramBotView, chat
+from .views import chat
 
 urlpatterns = [
 	url(r'^chat/$', chat, name='chat'),
